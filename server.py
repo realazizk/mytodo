@@ -28,6 +28,14 @@ class database(object):
     self.user=user
     self.token = token
 
+  def ls(self):
+    with dbcon:
+      user=self._get_username(self.token)
+      user_id=self._get_id_by_username(self.user)
+      cur=dbcon.cursor()
+      cur.execute('SELECT * FROM Todo WHERE owner=(?) AND done=0', (user_id,))
+      return cur.fetchall()
+
   def listall(self):
     with dbcon:
       user = self._get_username(self.token)
@@ -36,6 +44,16 @@ class database(object):
       cur = dbcon.cursor()
       cur.execute('SELECT * FROM Todo WHERE owner=(?)', (user_id,))
       return cur.fetchall()
+
+  def add(self, todo):
+    """
+    todo method will add a new entry to the database
+    todo object can be passed as a tuple or a list
+    """
+    with dbcon:
+      cur = dbcon.cursor()
+      cur.execute('INSERT INTO Todo VALUES(?, ?, ?, ?, ?)', todo)
+      dbcon.commit()
 
   def check_token(self, token):
     return self.token == token
@@ -48,12 +66,35 @@ class database(object):
         return auth_users[i]['user']
         break
       return False
+
+  def done_undone(self, num, da=1):
+    """
+    this will mark todo as done ,
+    using the number displayed to the user not the id
+    """
+    # this will get the id of the post
+
+    hm = self.listall()
+    iden = hm[int(num)][0]
+    with dbcon:
+      cur = dbcon.cursor()
+      cur.execute('UPDATE Todo SET done=(?) WHERE id=(?)', (da,iden))
+      dbcon.commit()
+
   def _get_id_by_username(self, user):
     with dbcon:
       cur = dbcon.cursor()
       cur.execute('SELECT id FROM Users WHERE username=(?)', (user,))
       return cur.fetchone()[0]
 
+  def remove(self, num):
+    hm = self.listall()
+    iden = hm[int(num)][0]
+    user_id=self._get_id_by_username(self.user)
+    with dbcon:
+      cur= dbcon.cursor()
+      cur.execute('DELETE FROM Todo WHERE id=(?) AND owner=(?)', (iden,user_id))
+      dbcon.commit()
 def generate_token(length):
   pool = string.letters + string.digits
   return ''.join(random.choice(pool) for i in xrange(length))
@@ -67,12 +108,20 @@ def check_duplicated_users(user, auth_users):
       break
   return found
 
+
+def remove_quotes(st):
+  # this will remove quotes or double quotes from a given string
+  if st[0] in ['\'', '"'] and st[-1] in ['\'', '"']:
+    return st[1:-1]
+  else:
+    return st
+
 def workerthread(conn):
   while True:
     data= conn.recv(1024)
     if not data:
       break
-    dat = data.split()
+    dat = data.split(' ', 3)
     if dat :
       if dat[0] == 'auth' :
         with dbcon:
@@ -103,6 +152,26 @@ def workerthread(conn):
         usr = database(dat[1], dat[2])
         a=usr.listall()
         conn.send(base64.b64encode(str(a)))
+      elif dat[0] == 'add':
+        # make the todo tuple
+        usr = database(dat[1], dat[2])
+        todotuple = (None, usr._get_id_by_username(dat[1]), dat[3], 0,
+                     time.strftime('%Y/%m/%d %H:%M:%S'))
+        usr.add(todotuple)
+      elif dat[0] == 'done':
+        usr=database(dat[1], dat[2])
+        usr.done_undone(dat[3])
+
+      elif dat[0] == 'undone':
+        usr=database(dat[1], dat[2])
+        usr.done_undone(dat[3], 0)
+      elif dat[0] == 'ls':
+        usr=database(dat[1], dat[2])
+        a=usr.ls()
+        conn.send(base64.b64encode(str(a)))
+      elif dat[0] == 'remove':
+        usr=database(dat[1], dat[2])
+        usr.remove(dat[3])
   conn.close()
 
 while True:
