@@ -1,8 +1,25 @@
+#!/usr/bin/env python2
+#Copyright (C) 2015 Mohamed Aziz knani
+
+#This program is free software: you can redistribute it and/or modify
+#it under the terms of the GNU General Public License as published by
+#the Free Software Foundation, either version 3 of the License, or
+#(at your option) any later version.
+
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+
+#You should have received a copy of the GNU General Public License
+#along with this program.  If not, see <http://www.gnu.org/licenses/>
+
 import socket
 import argparse
 from sys import argv
 import base64
 import time
+from datetime import datetime
 
 # Here set your user and password
 user = {
@@ -58,7 +75,10 @@ def display(out):
   init()
   for i, row in enumerate(out):
     parsed = time.strptime(row[4], "%Y/%m/%d %H:%M:%S")
-    print u'%i) %s, %s %s' % (i, row[2], Fore.YELLOW+time.strftime('%a %B %Y', parsed)+Fore.RESET,
+
+    d = (datetime.today() - datetime(parsed.tm_year, parsed.tm_mon, parsed.tm_mday)).days
+    dayz = str(d)+' days ago' if d else 'today'
+    print u'%i) %s, %s %s' % (i, row[2], Fore.YELLOW+dayz+Fore.RESET,
                              Fore.GREEN+u'\u2713'+Fore.RESET \
                           if row[3] else Fore.RED+u'\u2718'+Fore.RESET)
 
