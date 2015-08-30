@@ -11,6 +11,9 @@ user = {
   'token': ''
 }
 
+sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+server_adress = ('localhost', 7060)
+sock.connect(server_adress)
 def argument_parser():
   parser = argparse.ArgumentParser(description='mytodo script')
   parser.add_argument('-la', '--listall', help='List all todo\'s', dest='listall', action='store_true')
@@ -71,9 +74,6 @@ def remove(num, user, token):
 if __name__ == '__main__':
   arguments, user['user'], user['pass'] = argument_parser()
   #try:
-  sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-  server_adress = ('localhost', 7060)
-  sock.connect(server_adress)
   user = connectuser(user)
   if arguments.listall:
     out = listall(user['user'], user['token'])
