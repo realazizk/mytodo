@@ -13,10 +13,10 @@
 
 #You should have received a copy of the GNU General Public License
 #along with this program.  If not, see <http://www.gnu.org/licenses/>
-# Warning this some spaghetti code beware you were warned
+
 import time
 import wx
-import mytodo_cli
+import tools
 import sys
 from datetime import datetime, timedelta
 
@@ -31,12 +31,8 @@ class mytodoGui(wx.Frame):
     super(mytodoGui, self).__init__(*args, **kwargs)
     panel = wx.Panel(self)
     hbox = wx.BoxSizer(wx.HORIZONTAL)
-    self.user  = {
-      'user'  : 'mohamed',
-      'pass'  : 'root',
-      'token' : ''
-    }
-    self.user = mytodo_cli.connectuser(self.user)
+    self.user  = tools.user
+    self.user = tools.connectuser(self.user)
 
     #print out
     self.listctrl = wx.ListCtrl(panel, 2, style=wx.LC_REPORT)
@@ -86,14 +82,14 @@ class mytodoGui(wx.Frame):
   def Add(self, e):
     text = wx.GetTextFromUser('Enter your TODO', 'Insert Dialog')
     if text != '':
-      mytodo_cli.add(text, self.user['user'], self.user['token'])
+      tools.add(text, self.user['user'], self.user['token'])
     self.Reload()
 
   def Reload(self, e=1):
     self.listctrl.ClearAll()
     self.listctrl.InsertColumn(0, "Text")
     self.listctrl.InsertColumn(1, "Date")
-    out = mytodo_cli.listall(self.user['user'], self.user['token'])
+    out = tools.listall(self.user['user'], self.user['token'])
     self.out = out
     for i, e in enumerate(out):
 
@@ -113,14 +109,14 @@ class mytodoGui(wx.Frame):
   def Undone(self, e):
     me = self.listctrl.GetFirstSelected()
     if self.out[me][3]:
-      mytodo_cli.undone(me, self.user['user'], self.user['token'])
-    else :mytodo_cli.done(me, self.user['user'], self.user['token'])
+      tools.undone(me, self.user['user'], self.user['token'])
+    else :tools.done(me, self.user['user'], self.user['token'])
     self.Reload()
 
   def Delete(self, e):
     me = self.listctrl.GetFirstSelected()
     if self.onExclamation(1):
-      mytodo_cli.remove(me, self.user['user'], self.user['token'])
+      tools.remove(me, self.user['user'], self.user['token'])
       self.Reload()
   def onExclamation(self, event):
       msg = "Are you sure you want to delete the todo ?"
@@ -135,6 +131,7 @@ class mytodoGui(wx.Frame):
         return True
       dlg.Destroy()
       return False
+
 if __name__ == '__main__':
   app = wx.App()
   mytg = mytodoGui(None, -1, 'mytodo')

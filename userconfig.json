@@ -1,0 +1,6 @@
+
+{
+    "username" : "mohamed",
+    "password" : "root",
+    "host"     : ["localhost", 7060] 
+}
