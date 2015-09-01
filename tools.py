@@ -19,8 +19,12 @@ import socket
 import base64
 from datetime import datetime
 import time
+import os
 
-def loadUserConfig(filename="userconfig.json"):
+def currdir(filename):
+  return os.path.join(os.path.dirname(__file__), filename)
+
+def loadUserConfig(filename=currdir( "userconfig.json")):
   with open(filename, 'r') as myfile:
     toparse = myfile.read()
 
@@ -32,19 +36,7 @@ def loadUserConfig(filename="userconfig.json"):
   return a
 
 
-a = loadUserConfig()
-
-user = {
-  'user' : a['username'],
-  'pass' : a['password'],
-  'token': ''
-}
-
-sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server_adress = (a['host'][0], a['host'][1])
-sock.connect(server_adress)
-
-def connectuser(user):
+def connectuser(user, sock):
   # authentificate
   sock.send('auth %s %s' % (user['user'], user['pass']))
   if sock.recv(3) == 'SUC' :
@@ -56,19 +48,37 @@ def connectuser(user):
     exit(0)
   return user
 
-def listall(user, token):
-  sock.send('lsall %s %s' % (user, token))
-  data = sock.recv(4096)
-  # I think this can cause security issue
-  return eval(base64.b64decode(data))
+class Client(object):
 
-def ls(user, token):
-  sock.send('ls %s %s' % (user, token))
-  data= sock.recv(4096)
-  return eval(base64.b64decode(data))
+  def __init__(self, sock, user, token):
+    self.sock = sock
+    self.user = user
+    self.token = token
 
-def add(todotext, user, token):
-  sock.send('add %s %s %s' % (user, token, todotext))
+  def listall(self):
+    self.sock.send('lsall %s %s' % (self.user, self.token))
+    data = self.sock.recv(4096)
+    # I think this can cause security issue
+    return eval(base64.b64decode(data))
+
+  def ls(self):
+    self.sock.send('ls %s %s' % (self.user, self.token))
+    data= self.sock.recv(4096)
+    return eval(base64.b64decode(data))
+
+  def add(self, todotext):
+    self.sock.send('add %s %s %s' % (self.user, self.token, todotext))
+
+
+  def done(self, num):
+    self.sock.send('done %s %s %s' % (self.user, self.token, num))
+
+  def undone(self, num):
+    self.sock.send('undone %s %s %s' % (self.user, self.token, num))
+
+  def remove(self, num):
+    self.sock.send('remove %s %s %s' % (self.user, self.token, num))
+
 
 def display(out):
   try:
@@ -88,16 +98,19 @@ def display(out):
     d = (datetime.today() - datetime(parsed.tm_year, parsed.tm_mon, parsed.tm_mday)).days
     dayz = str(d)+' days ago' if d else 'today'
     print u'%i) %s, %s %s' % (i, row[2], Fore.YELLOW+dayz+Fore.RESET,
-                             Fore.GREEN+u'\u2713'+Fore.RESET \
+                            Fore.GREEN+u'\u2713'+Fore.RESET \
                           if row[3] else Fore.RED+u'\u2718'+Fore.RESET)
 
-def done(num, user, token):
-  sock.send('done %s %s %s' % (user, token, num))
+def initall():
 
-def undone(num, user, token ):
-  sock.send('undone %s %s %s' % (user, token, num))
-
-def remove(num, user, token):
-  sock.send('remove %s %s %s' % (user, token, num))
-
+  a = loadUserConfig()
+  user = {
+    'user' : a['username'],
+    'pass' : a['password'],
+    'token': ''
+  }
+  sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+  server_adress = (a['host'][0], a['host'][1])
+  sock.connect(server_adress)
+  return user, sock
 

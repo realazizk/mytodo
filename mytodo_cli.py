@@ -17,7 +17,7 @@
 import argparse
 from sys import argv
 from tools import *
-
+user, sock = initall()
 def argument_parser():
   parser = argparse.ArgumentParser(description='mytodo script')
   parser.add_argument('-la', '--listall', help='List all todo\'s', dest='listall', action='store_true')
@@ -35,22 +35,23 @@ def argument_parser():
 if __name__ == '__main__':
   arguments, user['user'], user['pass'] = argument_parser()
   #try:
-  user = connectuser(user)
+  user = connectuser(user, sock)
+  me = Client(sock, user['user'], user['token'])
   if arguments.listall:
-    out = listall(user['user'], user['token'])
+    out = me.listall()
     #print out
     display(out)
   elif arguments.add:
-    add(arguments.add, user['user'], user['token'])
+    me.add(arguments.add)
   elif arguments.done:
-    done(arguments.done, user['user'], user['token'])
+    me.done(arguments.done)
   elif arguments.undone:
-    undone(arguments.undone, user['user'], user['token'])
+    me.undone(arguments.undone)
   elif arguments.ls:
-    out = ls(user['user'], user['token'])
+    out = me.ls()
     display(out)
   elif arguments.remove:
-    remove(arguments.remove, user['user'], user['token'])
+    remove(arguments.remove)
   #except Exception as e:
   #  print e
   #  print 'Server is closed, please run it'

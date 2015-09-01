@@ -31,9 +31,10 @@ class mytodoGui(wx.Frame):
     super(mytodoGui, self).__init__(*args, **kwargs)
     panel = wx.Panel(self)
     hbox = wx.BoxSizer(wx.HORIZONTAL)
-    self.user  = tools.user
-    self.user = tools.connectuser(self.user)
-
+    self.user, self.sock  = tools.initall()
+    self.user = tools.connectuser(self.user, self.sock)
+    self.clie = tools.Client(self.sock, self.user['user'],
+                           self.user['token'])
     #print out
     self.listctrl = wx.ListCtrl(panel, 2, style=wx.LC_REPORT)
     hbox.Add(self.listctrl, 1, wx.EXPAND | wx.ALL, 20)
@@ -48,7 +49,7 @@ class mytodoGui(wx.Frame):
     connectmenu = wx.Menu()
 
     self.il = wx.ImageList(24,24, True)
-    for name in ['close.png', 'done.png']:
+    for name in [tools.currdir('close.png'), tools.currdir('done.png')]:
       bmp = wx.Bitmap(name, wx.BITMAP_TYPE_PNG)
       self.il.Add(bmp)
 
@@ -82,14 +83,14 @@ class mytodoGui(wx.Frame):
   def Add(self, e):
     text = wx.GetTextFromUser('Enter your TODO', 'Insert Dialog')
     if text != '':
-      tools.add(text, self.user['user'], self.user['token'])
+      self.clie(text)
     self.Reload()
 
   def Reload(self, e=1):
     self.listctrl.ClearAll()
     self.listctrl.InsertColumn(0, "Text")
     self.listctrl.InsertColumn(1, "Date")
-    out = tools.listall(self.user['user'], self.user['token'])
+    out = self.clie.listall()
     self.out = out
     for i, e in enumerate(out):
 
@@ -109,14 +110,15 @@ class mytodoGui(wx.Frame):
   def Undone(self, e):
     me = self.listctrl.GetFirstSelected()
     if self.out[me][3]:
-      tools.undone(me, self.user['user'], self.user['token'])
-    else :tools.done(me, self.user['user'], self.user['token'])
+      self.clie.undone(me)
+    else :
+      self.clie.done(me)
     self.Reload()
 
   def Delete(self, e):
     me = self.listctrl.GetFirstSelected()
     if self.onExclamation(1):
-      tools.remove(me, self.user['user'], self.user['token'])
+      self.clie.remove(me)
       self.Reload()
   def onExclamation(self, event):
       msg = "Are you sure you want to delete the todo ?"

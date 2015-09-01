@@ -21,6 +21,7 @@ import string
 import sqlite3
 import base64
 import time
+from tools import currdir
 
 auth_user = {
   'user' : '',
@@ -29,11 +30,9 @@ auth_user = {
 
 auth_users = []
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
 sock.bind(('localhost', 7060))
 sock.listen(10)
-dbcon = sqlite3.connect('todo.db', check_same_thread=False)
-
+dbcon = sqlite3.connect(currdir('todo.db'), check_same_thread=False)
 class database(object):
 
   def __init__(self, user, token):
