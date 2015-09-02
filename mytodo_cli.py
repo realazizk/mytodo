@@ -51,7 +51,7 @@ if __name__ == '__main__':
     out = me.ls()
     display(out)
   elif arguments.remove:
-    remove(arguments.remove)
+    me.remove(arguments.remove)
   #except Exception as e:
   #  print e
   #  print 'Server is closed, please run it'

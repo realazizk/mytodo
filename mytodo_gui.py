@@ -83,7 +83,7 @@ class mytodoGui(wx.Frame):
   def Add(self, e):
     text = wx.GetTextFromUser('Enter your TODO', 'Insert Dialog')
     if text != '':
-      self.clie(text)
+      self.clie.add(text)
     self.Reload()
 
   def Reload(self, e=1):
@@ -113,6 +113,9 @@ class mytodoGui(wx.Frame):
       self.clie.undone(me)
     else :
       self.clie.done(me)
+    # I don't know why but it this hack works try removing it the (un)done
+    # collapses with the listall code
+    time.sleep(0.2)
     self.Reload()
 
   def Delete(self, e):

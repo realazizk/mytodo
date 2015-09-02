@@ -20,7 +20,10 @@ import base64
 from datetime import datetime
 import time
 import os
+import sys
 
+reload(sys)
+sys.setdefaultencoding('utf8')
 def currdir(filename):
   return os.path.join(os.path.dirname(__file__), filename)
 
@@ -56,13 +59,13 @@ class Client(object):
     self.token = token
 
   def listall(self):
-    self.sock.send('lsall %s %s' % (self.user, self.token))
+    self.sock.send('lsall %s %s\n' % (self.user, self.token))
     data = self.sock.recv(4096)
     # I think this can cause security issue
     return eval(base64.b64decode(data))
 
   def ls(self):
-    self.sock.send('ls %s %s' % (self.user, self.token))
+    self.sock.send('ls %s %s\n' % (self.user, self.token))
     data= self.sock.recv(4096)
     return eval(base64.b64decode(data))
 

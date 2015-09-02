@@ -22,6 +22,10 @@ import sqlite3
 import base64
 import time
 from tools import currdir
+import sys
+
+reload(sys)
+sys.setdefaultencoding('utf8')
 
 auth_user = {
   'user' : '',
@@ -33,6 +37,8 @@ sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 sock.bind(('localhost', 7060))
 sock.listen(10)
 dbcon = sqlite3.connect(currdir('todo.db'), check_same_thread=False)
+dbcon.text_factory = str
+
 class database(object):
 
   def __init__(self, user, token):
@@ -70,7 +76,7 @@ class database(object):
     return self.token == token
 
   def _get_username(self, token):
-    # this will return the index in the list of the dict we are looking for
+    """this will return the index in the list of the dict we are looking for"""
     #lst = next(index for (index, d) in enumerate(auth_users) if d['token']==token)
     for i, dic in enumerate(auth_users):
       if dic['token']==token:
@@ -106,6 +112,7 @@ class database(object):
       cur= dbcon.cursor()
       cur.execute('DELETE FROM Todo WHERE id=(?) AND owner=(?)', (iden,user_id))
       dbcon.commit()
+
 def generate_token(length):
   pool = string.letters + string.digits
   return ''.join(random.choice(pool) for i in xrange(length))
@@ -129,7 +136,7 @@ def remove_quotes(st):
 
 def workerthread(conn):
   while True:
-    data= conn.recv(1024)
+    data= conn.recv(4096)
     if not data:
       break
     dat = data.split(' ', 3)
@@ -172,10 +179,12 @@ def workerthread(conn):
         usr.add(todotuple)
       elif dat[0] == 'done':
         usr=database(dat[1], dat[2])
+        dat[3] = dat[3].split('\n')[0]
         usr.done_undone(dat[3])
 
       elif dat[0] == 'undone':
         usr=database(dat[1], dat[2])
+        dat[3] = dat[3].split('\n')[0]
         usr.done_undone(dat[3], 0)
       elif dat[0] == 'ls':
         usr=database(dat[1], dat[2])
@@ -183,6 +192,7 @@ def workerthread(conn):
         conn.send(base64.b64encode(str(a)))
       elif dat[0] == 'remove':
         usr=database(dat[1], dat[2])
+        dat[3] = dat[3].split('\n')[0]
         usr.remove(dat[3])
   conn.close()
 
