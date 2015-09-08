@@ -94,15 +94,20 @@ def display(out):
       GREEN  = ''
       RED    = ''
   else : init()
-
+  try:
+    TICK = u'\u2713'.encode(sys.stdout.encoding, errors='strict')
+    ERROR = Fore.RED+u'\u2718'.encode(sys.stdout.encoding, errors='strict')
+  except UnicodeEncodeError : 
+    ERROR = 'Not Yet'
+    TICK = 'Done'
   for i, row in enumerate(out):
     parsed = time.strptime(row[4], "%Y/%m/%d %H:%M:%S")
 
     d = (datetime.today() - datetime(parsed.tm_year, parsed.tm_mon, parsed.tm_mday)).days
     dayz = str(d)+' days ago' if d else 'today'
-    print u'%i) %s, %s %s' % (i, row[2], Fore.YELLOW+dayz+Fore.RESET,
-                            Fore.GREEN+u'\u2713'+Fore.RESET \
-                          if row[3] else Fore.RED+u'\u2718'+Fore.RESET)
+    print u'%i) %s, %s %s' % (i, row[2].encode('utf-8'), Fore.YELLOW+dayz+Fore.RESET,
+                            Fore.GREEN+TICK+Fore.RESET \
+                          if row[3] else Fore.RED+ERROR+Fore.RESET)
 
 def initall():
 
