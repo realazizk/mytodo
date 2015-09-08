@@ -34,7 +34,7 @@ auth_user = {
 
 auth_users = []
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-sock.bind(('localhost', 7060))
+sock.bind(('0.0.0.0', 7060))
 sock.listen(10)
 dbcon = sqlite3.connect(currdir('todo.db'), check_same_thread=False)
 dbcon.text_factory = str
@@ -97,6 +97,14 @@ class database(object):
       cur = dbcon.cursor()
       cur.execute('UPDATE Todo SET done=(?) WHERE id=(?)', (da,iden))
       dbcon.commit()
+
+  def get_tag(self, tag):
+
+    user_id=self._get_id_by_username(self.user)
+    with dbcon:
+      cur = dbcon.cursor()
+      cur.execute('SELECT * FROM Todo WHERE owner=(?) AND todotext LIKE ?', ( user_id, '%'+tag+'%'))
+      return cur.fetchall()
 
   def _get_id_by_username(self, user):
     with dbcon:
@@ -194,6 +202,9 @@ def workerthread(conn):
         usr=database(dat[1], dat[2])
         dat[3] = dat[3].split('\n')[0]
         usr.remove(dat[3])
+      elif dat[0] ==  'get_tag':
+        usr = database(dat[1], dat[2])
+        conn.send(base64.b64encode(str(usr.get_tag(dat[3]))))
   conn.close()
 
 while True:

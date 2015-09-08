@@ -27,7 +27,8 @@ def argument_parser():
   parser.add_argument('-a', help='Add a new todo', dest='add')
   parser.add_argument('-d', '--done'  , help='Mark as done', dest='done')
   parser.add_argument('-ud', '--undone'  , help='Mark as undone', dest='undone')
-  parser.add_argument('-r', '--remove'  , help='Rmove an entry', dest='remove')
+  parser.add_argument('-r', '--remove'  , help='Remove an entry', dest='remove')
+  parser.add_argument('-t', '--tag', help='Search by tag')
   args = parser.parse_args()
   return (args, args.user or user['user'], args.passwd or user['pass'])
 
@@ -52,6 +53,9 @@ if __name__ == '__main__':
     display(out)
   elif arguments.remove:
     me.remove(arguments.remove)
+  elif arguments.tag:
+    out = me.category(arguments.tag)
+    display(out)
   #except Exception as e:
   #  print e
   #  print 'Server is closed, please run it'

@@ -82,6 +82,10 @@ class Client(object):
   def remove(self, num):
     self.sock.send('remove %s %s %s' % (self.user, self.token, num))
 
+  def category(self, tag):
+    self.sock.send('get_tag %s %s %s' % (self.user, self.token, tag))
+    data = self.sock.recv(4096)
+    return eval(base64.b64decode(data))
 
 def display(out):
   try:
@@ -97,7 +101,7 @@ def display(out):
   try:
     TICK = u'\u2713'.encode(sys.stdout.encoding, errors='strict')
     ERROR = Fore.RED+u'\u2718'.encode(sys.stdout.encoding, errors='strict')
-  except UnicodeEncodeError : 
+  except UnicodeEncodeError :
     ERROR = 'Not Yet'
     TICK = 'Done'
   for i, row in enumerate(out):
