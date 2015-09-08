@@ -87,6 +87,11 @@ class Client(object):
     data = self.sock.recv(4096)
     return eval(base64.b64decode(data))
 
+def dy (date) :
+  parsed = time.strptime(date, "%Y/%m/%d %H:%M:%S")
+  d = (datetime.today() - datetime(parsed.tm_year, parsed.tm_mon, parsed.tm_mday)).days
+  return str(d)+' days ago' if d else 'today'
+
 def display(out):
   try:
     from colorama import init, Fore
@@ -105,10 +110,7 @@ def display(out):
     ERROR = 'Not Yet'
     TICK = 'Done'
   for i, row in enumerate(out):
-    parsed = time.strptime(row[4], "%Y/%m/%d %H:%M:%S")
-
-    d = (datetime.today() - datetime(parsed.tm_year, parsed.tm_mon, parsed.tm_mday)).days
-    dayz = str(d)+' days ago' if d else 'today'
+    dayz = dy(row[4])
     print u'%i) %s, %s %s' % (i, row[2].encode('utf-8'), Fore.YELLOW+dayz+Fore.RESET,
                             Fore.GREEN+TICK+Fore.RESET \
                           if row[3] else Fore.RED+ERROR+Fore.RESET)

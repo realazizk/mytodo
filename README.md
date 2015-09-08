@@ -33,6 +33,10 @@ Search by tag
 
 ![6](screenshots/tag.png)
 
+A very simple conky example:
+
+![7](screenshots/conky.png) 
+
 ## Setting Up:
 
 This project is written in python (version 2) so you need to have it installed if you are running a GNU/Linux distribution like Debian or whatever I suppose that you have it installed.
