@@ -15,12 +15,19 @@ For the client part have already :
 
 ##Screeshots
 
+Under Debian GNU/Linux :
+
 ![1](screenshots/1.png)
 
 ![2](screenshots/2.png)
 
 ![3](screenshots/3.png)
 
+Under Windows XP :
+
+![4](screenshots/win_cli.png)
+
+![5](screenshots/win_gui.png)
 
 ## Setting Up:
 
