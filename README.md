@@ -1,7 +1,7 @@
 
 # Mytodo
 
-#### Warning : this software is still in development don't use in production.
+#### This Current version is stable after testing
 
 
 Mytodo is a free/libre (as in speech) todolist manager it protects totally the privacy of the user because the user himself will setup and hack this script for his own sake, basically this project focuses more on the user freedom rather than the quality of the software which comes in a second place.
