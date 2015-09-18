@@ -2,5 +2,5 @@
 {
     "username" : "mohamed",
     "password" : "root",
-    "host"     : ["192.168.1.10", 7060] 
+    "host"     : "http://localhost:5000/"
 }

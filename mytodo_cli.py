@@ -17,7 +17,9 @@
 import argparse
 from sys import argv
 from tools import *
-user, sock = initall()
+
+a =  loadUserConfig()
+
 def argument_parser():
   parser = argparse.ArgumentParser(description='mytodo script')
   parser.add_argument('-la', '--listall', help='List all todo\'s', dest='listall', action='store_true')
@@ -30,14 +32,36 @@ def argument_parser():
   parser.add_argument('-r', '--remove'  , help='Remove an entry', dest='remove')
   parser.add_argument('-t', '--tag', help='Search by tag')
   args = parser.parse_args()
-  return (args, args.user or user['user'], args.passwd or user['pass'])
+  return (args, args.user or a['username'], args.passwd or a['password'])
+
+def display(out):
+  try:
+    from colorama import init, Fore
+  except ImportError:
+    # Well that's my ugly hack
+    class Fore:
+      YELLOW = ''
+      RESET  = ''
+      GREEN  = ''
+      RED    = ''
+  else : init()
+  try:
+    TICK = u'\u2713'.encode(sys.stdout.encoding, errors='strict')
+    ERROR = Fore.RED+u'\u2718'.encode(sys.stdout.encoding, errors='strict')
+  except UnicodeEncodeError :
+    ERROR = 'Not Yet'
+    TICK = 'Done'
+  for row in out:
+    dayz = dy(row[0])
+    print u'%i) %s, %s %s' % (row[3], row[4].encode('utf-8'), Fore.YELLOW+dayz+Fore.RESET,
+                            Fore.GREEN+TICK+Fore.RESET \
+                          if row[2] else Fore.RED+ERROR+Fore.RESET)
 
 
 if __name__ == '__main__':
-  arguments, user['user'], user['pass'] = argument_parser()
+  arguments, a['username'], a['password'] = argument_parser()
   #try:
-  user = connectuser(user, sock)
-  me = Client(sock, user['user'], user['token'])
+  me = Client(a['username'], a['password'])
   if arguments.listall:
     out = me.listall()
     #print out
