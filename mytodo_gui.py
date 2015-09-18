@@ -31,10 +31,9 @@ class mytodoGui(wx.Frame):
     super(mytodoGui, self).__init__(*args, **kwargs)
     panel = wx.Panel(self)
     hbox = wx.BoxSizer(wx.HORIZONTAL)
-    self.user, self.sock  = tools.initall()
-    self.user = tools.connectuser(self.user, self.sock)
-    self.clie = tools.Client(self.sock, self.user['user'],
-                           self.user['token'])
+    a = tools.loadUserConfig()
+    self.clie = tools.Client(a['username'],
+                           a['password'])
     #print out
     self.listctrl = wx.ListCtrl(panel, 2, style=wx.LC_REPORT)
     hbox.Add(self.listctrl, 1, wx.EXPAND | wx.ALL, 20)
@@ -95,12 +94,12 @@ class mytodoGui(wx.Frame):
     for i, e in enumerate(out):
 
       #parsed = datetime.today() - timedelta(e[4])
-      parsed = time.strptime(e[4], "%Y/%m/%d %H:%M:%S")
+      parsed = time.strptime(e[0], "%Y/%m/%d %H:%M:%S")
       d = (datetime.today() - datetime(parsed.tm_year, parsed.tm_mon, parsed.tm_mday)).days
       dayz = str(d)+' days ago' if d else 'today'
       #self.listctrl.Append( [e[2], time.strftime('%A %B %Y', parsed)] )
-      img_id = 1 if e[3] else 0
-      index = self.listctrl.InsertStringItem(sys.maxint, e[2], img_id)
+      img_id = 1 if e[2] else 0
+      index = self.listctrl.InsertStringItem(sys.maxint, e[4], img_id)
       self.listctrl.SetStringItem(index, 1, dayz)
     #print self.il.GetImageCount()
 

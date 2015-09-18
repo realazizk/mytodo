@@ -1,9 +1,6 @@
 
 # Mytodo
 
-#### This Current version is stable after testing
-
-
 Mytodo is a free/libre (as in speech) todolist manager it protects totally the privacy of the user because the user himself will setup and hack this script for his own sake, basically this project focuses more on the user freedom rather than the quality of the software which comes in a second place.
 
 This project mainly contains two parts the server part which is a really simple python code you can setup on any old machine or even a raspberry pi and a client software.
@@ -41,11 +38,13 @@ A very simple conky example:
 
 This project is written in python (version 2) so you need to have it installed if you are running a GNU/Linux distribution like Debian or whatever I suppose that you have it installed.
 
-It also depends on WXpython and Sqlite3.
+It also depends on WXpython, Sqlite3, Flask, SQLAlchemy and requests.
 If you are using a GNU/Linux distribution you can get it:
 for example on Debian :
 
-	sudo  apt-get install python-wxgtkx.y sqlite3
+	sudo  apt-get install python-wxgtkx.y sqlite3 python-flask python-sqlalchemy\
+                                                  python-requests
+
 colorama is optional (if you want some colors in your console and that works under windows too you shall install it) no more escape codes.
 
 You can Install it using pip
@@ -68,15 +67,16 @@ And then restart your terminal or just type in:
 
 	source ~/.bashrc
 
+(Don't forget to mark the py files as executable)
+
 Now you can edit you userconfig.json which contains the username and the password by default it's mohamed:root, if you want to change
+
+You may also want to configure your web application config.
+
 that add a row in the database alternatively I will make a python script for doing the job for you.
-Then you have to start the server so you should do :
+Then you have to start the HTTP server so you should do :
 
-	mytodo_server.py
-
-and if you want to run it in background just do:
-
-	mytodo_server.py &
+	runweb.py
 
 now just start the client that you prefer I guess that you like the Command line version more because you are a nerd like me.
 
@@ -123,13 +123,19 @@ Happy hacking !
 ------------------
 
 ## TODO or brainstorming:
-  - Write a web application.
+  X Write a web application.
   - Write an android application (using kivy maybe I started discovering it)
-  - Improve the networking code
   - Improve the GUI
   - Add the ability to record sounds and videos
   - The ability to draw using the mouse or the touchpad
 
-
 (These ideas are worthless if they are not implemented)
+
+## Contributing to the project:
+
+If you really like mytodo and want to contribute you can work with the code
+or write docs or wiki, contact me at  medazizknani[at]gmail.com
+
+Or you can even help with spreading mytodo on the World Wide Web.
+
 
