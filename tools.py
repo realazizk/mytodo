@@ -53,17 +53,14 @@ def connectuser(user, sock):
 
 class Client(object):
 
-  def __init__(self, sock, user, token):
-    self.sock = sock
-    self.user = user
-    self.token = token
-
+  def __init__(self, user, password):
+    import requests
+    self.cord = {
+      'username' : user,
+      'password' : password
+    }
   def listall(self):
-    self.sock.send('lsall %s %s\n' % (self.user, self.token))
-    data = self.sock.recv(4096)
-    # I think this can cause security issue
-    return eval(base64.b64decode(data))
-
+    req =
   def ls(self):
     self.sock.send('ls %s %s\n' % (self.user, self.token))
     data= self.sock.recv(4096)
