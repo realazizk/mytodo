@@ -107,21 +107,18 @@ class mytodoGui(wx.Frame):
       self.listctrl.SetColumnWidth(i, wx.LIST_AUTOSIZE)
 
   def Undone(self, e):
-    me = self.listctrl.GetFirstSelected()
-    if self.out[me][3]:
-      self.clie.undone(me)
-    else :
-      self.clie.done(me)
-    # I don't know why but it this hack works try removing it the (un)done
-    # collapses with the listall code
-    time.sleep(0.2)
+    for i in self.getSelected():
+      if self.out[i][2]:
+        self.clie.undone(self.out[i][3])
+      else :
+        self.clie.done(self.out[i][3])
     self.Reload()
 
   def Delete(self, e):
-    me = self.listctrl.GetFirstSelected()
     if self.onExclamation(1):
-      self.clie.remove(me)
+      map(lambda rx : self.clie.remove(self.out[rx][3]), self.getSelected())
       self.Reload()
+
   def onExclamation(self, event):
       msg = "Are you sure you want to delete the todo ?"
       return self.showMessageDlg(msg, "Question",
@@ -135,6 +132,20 @@ class mytodoGui(wx.Frame):
         return True
       dlg.Destroy()
       return False
+
+
+  def getSelected(self):
+    """
+    Returns selected items
+    """
+    # this code may be inefficient but it works
+    # TODO : use GetNextSelected method.
+    # TODO : save the above todo on mytodo ...
+    c = []
+    for i in range(self.listctrl.GetItemCount()):
+      if self.listctrl.IsSelected(i):
+        c.append(i)
+    return c
 
 if __name__ == '__main__':
   app = wx.App()
