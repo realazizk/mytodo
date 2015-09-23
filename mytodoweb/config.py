@@ -19,6 +19,9 @@ from mytodoweb import app
 # Disable debug in production
 app.config['DEBUG'] = False
 
+app.config["HOST"] = '0.0.0.0'
+app.config["PORT"] = 5000
+
 # Change this; as suggested in Flask docs you may want
 # to use urandom
 app.secret_key = 'My-really-top-key'
