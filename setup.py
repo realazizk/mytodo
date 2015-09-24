@@ -4,7 +4,7 @@ from setuptools import setup
 
 setup(
   name='mytodo',
-  version='2.1',
+  version='0.2.1',
   description='The free/libre todo list manager',
   url='https://github.com/mohamed-aziz/mytodo',
   author='Mohamed Aziz Knani',
@@ -27,7 +27,6 @@ setup(
   install_requires=[
     'requests',
     'flask',
-    'sqlalchemy',
-    'wxPython'
+    'sqlalchemy'
   ]
 )

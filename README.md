@@ -3,9 +3,9 @@
 
 Mytodo is a free/libre (as in speech) todolist manager it protects totally the privacy of the user because the user himself will setup and hack this script for his own sake, basically this project focuses more on the user freedom rather than the quality of the software which comes in a second place.
 
-This project mainly contains two parts the server part which is a really simple python code you can setup on any old machine or even a raspberry pi and a client software.
+This project mainly contains two parts the server part which is a really simple RESTful API that you can setup on any old machine or even a raspberry pi and a client software.
 
-For the client part have already :
+For the client part we have already :
 
   - A console based client.
   - A really simple GUI tool.
@@ -17,8 +17,6 @@ Under Debian GNU/Linux :
 ![1](screenshots/1.png)
 
 ![2](screenshots/2.png)
-
-![3](screenshots/3.png)
 
 Under Windows XP :
 
@@ -38,83 +36,64 @@ A very simple conky example:
 
 This project is written in python (version 2) so you need to have it installed if you are running a GNU/Linux distribution like Debian or whatever I suppose that you have it installed.
 
-It also depends on WXpython, Sqlite3, Flask, SQLAlchemy and requests.
-If you are using a GNU/Linux distribution you can get it:
-for example on Debian :
+You could get mytodo using pip :
+    # pip install mytodo
 
-	sudo  apt-get install python-wxgtkx.y sqlite3 python-flask python-sqlalchemy\
-                                                  python-requests
+Now you can edit you will setup a file called mytodoconfig.json in your home directory which contains the following
 
-colorama is optional (if you want some colors in your console and that works under windows too you shall install it) no more escape codes.
+```
+{
+    "username" : "mohamed",
+    "password" : "root",
+    "host"     : "http://localhost:5000/",
+}
+```
 
-You can Install it using pip
+NOTE : We do not support user creation for now do it manully for now or use mohamed:root.
 
-	sudo pip install colorama
+You also need to edit the database path in the server config under mytodo/mytodoweb/config.py .
 
-You can clone the repository using
+You should now start the server using mytodo_server.
 
-	git clone https://github.com/mohamed-aziz/mytodo.git
-
-Or you can download the zip.
-
-Now after the dependencies are satisfied and you have your mytodo It's time to set it up.
-
-I suggest that you add mytodo directory to your path so if you are using bash as your default shell it would be:
-
-	echo "export PATH=$PATH:/home/username/mytodo/" >> ~/.bashrc
-
-And then restart your terminal or just type in:
-
-	source ~/.bashrc
-
-(Don't forget to mark the py files as executable)
-
-Now you can edit you userconfig.json which contains the username and the password by default it's mohamed:root, if you want to change
-
-You may also want to configure your web application config.
-
-that add a row in the database alternatively I will make a python script for doing the job for you.
-Then you have to start the HTTP server so you should do :
-
-	runweb.py
-
-now just start the client that you prefer I guess that you like the Command line version more because you are a nerd like me.
-
-So the basic mytodo_cli.py usage is :
+So the basic mytodo_cli usage is :
 
 to add a task:
 
-	mytodo_cli.py -a "Do my math homework"
+	mytodo_cli -a "Do my math homework"
 
 to list all (Completed and uncompleted tasks):
 
-	mytodo_cli.py -la 
+	mytodo_cli -la 
 
 to list only uncompleted tasks:
 
-	mytodo_cli.py -l
+	mytodo_cli -l
 
-to mark a task as done (the number is from the output of -la):
+to mark a task as done :
 
-	mytodo_cli.py -d number
+	mytodo_cli -d number
 
-to mark a task as undone (the number is from the output of -la):
+to mark a task as undone:
 
-	mytodo_cli.py -ud number
+	mytodo_cli -ud number
 
-to delete a task (the number is from the output of -la):
+to delete a task :
 
-	mytodo_cli.py -r number
+	mytodo_cli -r number
 
 to specify user other user and password:
 
-	mytodo_cli.py -u username -p password
+	mytodo_cli -u username -p password
+
+to search by tag:
+    
+    mytodo_cli -t "Mytodo"
 
 ------------------
 
 For the GUI you just call it using:
 
-	mytodo_gui.py
+	mytodo_gui
 
 the usage is simple I think you know your way out...
 
