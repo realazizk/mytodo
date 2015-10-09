@@ -40,12 +40,23 @@ def loadUserConfig(filename=join(expanduser('~'), 'mytodoconfig.json')):
     exit()
   return a
 
+def saveUserConfig(data, filename=join(expanduser('~'), 'mytodoconfig.json')):
+  d = json.dumps(data)
+  with open(filename, 'w') as myfile:
+    myfile.write(d)
+
+  return 0
+
 def dictToList(sic):
   a = []
-  sic = json.loads(sic)
-  for i in range(len(sic)):
-    a.append( sic[str(i)].values() )
-  return a
+  try:
+    sic = json.loads(sic)
+  except ValueError:
+    return False
+  else:
+    for i in range(len(sic)):
+      a.append( sic[str(i)].values() )
+    return a
 
 class Client(object):
 

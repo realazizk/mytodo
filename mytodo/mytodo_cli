@@ -18,6 +18,17 @@ import argparse
 from sys import argv
 from mytodo.tools import *
 
+try:
+  from colorama import init, Fore
+except ImportError:
+  # Well that's my ugly hack
+  class Fore:
+    YELLOW = ''
+    RESET  = ''
+    GREEN  = ''
+    RED    = ''
+else : init()
+
 a =  loadUserConfig()
 
 def argument_parser():
@@ -36,16 +47,6 @@ def argument_parser():
 
 def display(out):
   try:
-    from colorama import init, Fore
-  except ImportError:
-    # Well that's my ugly hack
-    class Fore:
-      YELLOW = ''
-      RESET  = ''
-      GREEN  = ''
-      RED    = ''
-  else : init()
-  try:
     TICK = u'\u2713'.encode(sys.stdout.encoding, errors='strict')
     ERROR = Fore.RED+u'\u2718'.encode(sys.stdout.encoding, errors='strict')
   except UnicodeEncodeError :
@@ -63,8 +64,11 @@ def main():
   me = Client(a['username'], a['password'])
   if arguments.listall:
     out = me.listall()
+    if not out:
+      print Fore.RED+'Could not connect to mytodo server :('+Fore.RESET
     #print out
-    display(out)
+    else:
+      display(out)
   elif arguments.add:
     me.add(arguments.add)
   elif arguments.done:
@@ -73,12 +77,18 @@ def main():
     me.undone(arguments.undone)
   elif arguments.ls:
     out = me.ls()
-    display(out)
+    if not out:
+      print Fore.RED+'Could not connect to mytodo server :('+Fore.RESET
+    else:
+      display(out)
   elif arguments.remove:
     me.remove(arguments.remove)
   elif arguments.tag:
     out = me.category(arguments.tag)
-    display(out)
+    if not out:
+      print Fore.RED+'Could not connect to mytodo server :('+Fore.RESET
+    else:
+      display(out)
   #except Exception as e:
   #  print e
   #  print 'Server is closed, please run it'

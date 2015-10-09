@@ -14,11 +14,69 @@
 #You should have received a copy of the GNU General Public License
 #along with this program.  If not, see <http://www.gnu.org/licenses/>
 
+# When I wrote this code I was learning WXpython so only God and I knows 
+# what I were doing, now only god knows ...
+
 import time
 import wx
 import mytodo.tools as tools
 import sys
 from datetime import datetime, timedelta
+
+class configMenu(wx.Frame):
+
+  def __init__(self, *args, **kwargs):
+    super(configMenu, self).__init__(*args, **kwargs)
+    self.data = tools.loadUserConfig()
+    self.panel = wx.Panel( self, wx.ID_ANY )
+    
+    vbox = wx.BoxSizer(wx.VERTICAL)
+    hbox1 = wx.BoxSizer(wx.HORIZONTAL)
+    hbox2 = wx.BoxSizer(wx.HORIZONTAL)
+    hbox3 = wx.BoxSizer(wx.HORIZONTAL)
+
+    label1 = wx.StaticText( self.panel, wx.ID_ANY, 'Username' )
+    self.input1 = wx.TextCtrl( self.panel, wx.ID_ANY, value=self.data['username'] )
+
+    label2 = wx.StaticText( self.panel, wx.ID_ANY, 'Password' )
+    self.input2 = wx.TextCtrl( self.panel, wx.ID_ANY, value=self.data['password'] )
+
+    label3 = wx.StaticText( self.panel, wx.ID_ANY, 'Host' )
+    self.input3 = wx.TextCtrl( self.panel, wx.ID_ANY, value=self.data['host'] )
+    
+    ok = wx.Button(self.panel, wx.ID_ANY, 'Save')
+    self.Bind(wx.EVT_BUTTON, self.onAccept, ok)
+    self.Bind(wx.EVT_CLOSE, self.onClose, self) 
+
+
+    hbox1.Add( label1, 0, wx.ALL, 5 )
+    hbox1.Add( self.input1, 0, wx.ALL|wx.EXPAND, 5 )
+
+    hbox2.Add( label2 , 0, wx.ALL, 5)
+    hbox2.Add( self.input2 , 0, wx.ALL|wx.EXPAND, 5)
+
+    hbox3.Add( label3 , 0, wx.ALL, 5)
+    hbox3.Add( self.input3 , 0, wx.ALL|wx.EXPAND, 5)
+    vbox.Add( hbox1, 0, wx.ALL, 5 )
+    vbox.Add( hbox2 , 0, wx.ALL|wx.EXPAND, 5)
+    vbox.Add( hbox3 , 0, wx.ALL|wx.EXPAND, 5)
+    vbox.Add( wx.StaticLine(self.panel), 0, wx.ALL|wx.EXPAND, 5 ) 
+    vbox.Add( ok, 0, wx.ALL|wx.ALIGN_CENTER, 5 )
+
+    self.panel.SetSizer(vbox)
+    vbox.Fit(self)
+
+  def onAccept(self, e):
+    data = {
+        'username' : self.input1.GetValue() ,
+        'password' : self.input2.GetValue(),
+        'host' : self.input3.GetValue()
+    }
+
+    tools.saveUserConfig( data )
+
+  def onClose(self, e):
+    self.Hide()
 
 class mytodoGui(wx.Frame):
 
@@ -56,7 +114,8 @@ class mytodoGui(wx.Frame):
 
     self.listctrl.SetImageList(self.il, wx.IMAGE_LIST_SMALL)
 
-    connectmenu.Append(self.CONNECT_DATA, 'Connect', 'Connect to a mytodo server')
+    connectmenu.Append(self.CONNECT_DATA, 'Connection options', 
+        'Connect to a mytodo server')
 
     menubar.Append(connectmenu, 'Options')
     self.SetMenuBar(menubar)
@@ -85,10 +144,11 @@ class mytodoGui(wx.Frame):
     btnPanel.SetSizer(vbox)
     hbox.Add(btnPanel, 0.6, wx.EXPAND | wx.RIGHT, 20)
     panel.SetSizer(hbox)
+    self.Menu = configMenu(self, -1, 'Config Menu')
     self.Reload()
 
   def ConnectMenu(self, e):
-    print 'hello'
+    self.Menu.Show()
 
   def Add(self, e):
     text = wx.GetTextFromUser('Enter your TODO', 'Insert Dialog')
@@ -102,6 +162,11 @@ class mytodoGui(wx.Frame):
     self.listctrl.InsertColumn(1, "Date")
     if not out:
       out = self.clie.listall()
+      if not out:
+        wx.MessageBox('Could not connect to mytodo server', 'Error', 
+            wx.OK | wx.ICON_ERROR)
+        self.Close()
+        return
     self.out = out
     for i, e in enumerate(out):
 
@@ -168,7 +233,7 @@ class mytodoGui(wx.Frame):
 
 if __name__ == '__main__':
   app = wx.App()
-  mytg = mytodoGui(None, -1, 'mytodo')
+  mytg = mytodoGui(None, -1, 'mytodo', size=(700, 400))
   mytg.Show()
   app.MainLoop()
 
