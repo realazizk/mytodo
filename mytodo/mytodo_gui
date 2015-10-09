@@ -27,17 +27,19 @@ class mytodoGui(wx.Frame):
   UN_DONE      = wx.NewId()
   UPDATE       = wx.NewId()
   DELETE       = wx.NewId()
+  SEARCH       = wx.NewId()
   def __init__(self, *args, **kwargs):
     super(mytodoGui, self).__init__(*args, **kwargs)
     panel = wx.Panel(self)
     hbox = wx.BoxSizer(wx.HORIZONTAL)
+    #pTree = wx.TreeCtrl( panel, 3, 0 )
     a = tools.loadUserConfig()
     self.clie = tools.Client(a['username'],
                            a['password'])
     #print out
     self.listctrl = wx.ListCtrl(panel, 2, style=wx.LC_REPORT)
     hbox.Add(self.listctrl, 1, wx.EXPAND | wx.ALL, 20)
-    btnPanel = wx.Panel(panel, -1)
+    btnPanel = wx.Panel(panel, wx.ID_ANY)
     vbox = wx.BoxSizer(wx.VERTICAL)
     new = wx.Button(btnPanel, self.NEW, 'New', size=(90, 30))
     ren = wx.Button(btnPanel, self.UN_DONE, '(Un)Done', size=(90, 30))
@@ -60,17 +62,26 @@ class mytodoGui(wx.Frame):
     self.SetMenuBar(menubar)
     self.listctrl.SetImageList(self.il, wx.IMAGE_LIST_SMALL)
 
+    self.pSearch = wx.SearchCtrl( btnPanel, self.SEARCH, size=(90, 30),
+        style=wx.TE_PROCESS_ENTER)
+
+    self.pSearch.ShowCancelButton( True )
+
     self.Bind(wx.EVT_MENU, self.ConnectMenu, id=self.CONNECT_DATA)
     self.Bind(wx.EVT_BUTTON, self.Add, id=self.NEW)
     self.Bind(wx.EVT_BUTTON, self.Undone, id=self.UN_DONE)
     self.Bind(wx.EVT_BUTTON, self.Reload, id=self.UPDATE)
     self.Bind(wx.EVT_BUTTON, self.Delete, id=self.DELETE)
+    self.Bind(wx.EVT_TEXT_ENTER, self.onSearch, self.pSearch)
+    self.Bind(wx.EVT_SEARCHCTRL_CANCEL_BTN, self.onSearchCancel, self.pSearch)
+    
 
     vbox.Add((-1, 20))
     vbox.Add(new)
     vbox.Add(ren, 0, wx.TOP, 5)
     vbox.Add(dlt, 0, wx.TOP, 5)
     vbox.Add(clr, 0, wx.TOP, 5)
+    vbox.Add(self.pSearch, 0, wx.ALL, 5)
     btnPanel.SetSizer(vbox)
     hbox.Add(btnPanel, 0.6, wx.EXPAND | wx.RIGHT, 20)
     panel.SetSizer(hbox)
@@ -85,11 +96,12 @@ class mytodoGui(wx.Frame):
       self.clie.add(text)
     self.Reload()
 
-  def Reload(self, e=1):
+  def Reload(self, e=1, out=[]):
     self.listctrl.ClearAll()
     self.listctrl.InsertColumn(0, "Text")
     self.listctrl.InsertColumn(1, "Date")
-    out = self.clie.listall()
+    if not out:
+      out = self.clie.listall()
     self.out = out
     for i, e in enumerate(out):
 
@@ -146,6 +158,13 @@ class mytodoGui(wx.Frame):
       if self.listctrl.IsSelected(i):
         c.append(i)
     return c
+
+  def onSearchCancel(self, e):
+    self.Reload()
+
+  def onSearch(self, e):
+
+    self.Reload(out= self.clie.category(self.pSearch.GetValue()))
 
 if __name__ == '__main__':
   app = wx.App()
