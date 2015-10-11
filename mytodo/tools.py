@@ -21,7 +21,7 @@ import sys
 from urlparse import urljoin
 import requests
 import json
-from os.path import expanduser, join
+from os.path import expanduser, join, isfile
 
 reload(sys)
 sys.setdefaultencoding('utf8')
@@ -29,7 +29,22 @@ sys.setdefaultencoding('utf8')
 def currdir(filename):
   return os.path.join(os.path.dirname(__file__), filename)
 
+def saveUserConfig(data, filename=join(expanduser('~'), 'mytodoconfig.json')):
+  d = json.dumps(data)
+  with open(filename, 'w') as myfile:
+    myfile.write(d)
+
+  return 0
+
 def loadUserConfig(filename=join(expanduser('~'), 'mytodoconfig.json')):
+  # Create a default user config if it deosen't exist
+  if not isfile(filename):
+    saveUserConfig({
+      'username' : 'demo',
+      'password' : 'test',
+      'host'     : 'http://localhost:5000/'
+      })
+
   with open(filename, 'r') as myfile:
     toparse = myfile.read()
   global a
@@ -40,12 +55,6 @@ def loadUserConfig(filename=join(expanduser('~'), 'mytodoconfig.json')):
     exit()
   return a
 
-def saveUserConfig(data, filename=join(expanduser('~'), 'mytodoconfig.json')):
-  d = json.dumps(data)
-  with open(filename, 'w') as myfile:
-    myfile.write(d)
-
-  return 0
 
 def dictToList(sic):
   a = []
