@@ -45,7 +45,7 @@ Now you can edit you will setup a file called mytodoconfig.json in your home dir
 {
     "username" : "mohamed",
     "password" : "root",
-    "host"     : "http://localhost:5000/",
+    "host"     : "http://localhost:5000/"
 }
 ```
 
