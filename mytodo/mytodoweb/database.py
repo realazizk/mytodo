@@ -25,7 +25,6 @@ engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
 Base = declarative_base()
 
 Session = sessionmaker(bind=engine)
-
 class Todo(Base):
   __tablename__ = 'Todo'
   id = Column(Integer, primary_key=True)
@@ -52,4 +51,11 @@ class User(Base):
   id = Column(Integer, primary_key=True)
   username = Column(String)
   password = Column(String)
+  
+  def __init__(self, username, password):
+    self.username = username
+    self.password = password
+
+  def __str__(self):
+    return "(%d, %s, %s)" % (self.id, self.username, self.password)
 

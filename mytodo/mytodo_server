@@ -14,7 +14,21 @@
 #You should have received a copy of the GNU General Public License
 #along with this program.  If not, see <http://www.gnu.org/licenses/>
 
-from mytodo.mytodoweb import app
+from mytodo.mytodoweb import app, database
+import os.path
+
+FULLPATH = app.config['SQLALCHEMY_DATABASE_URI'][9:]
+
+# Init the database
+if not os.path.isfile( FULLPATH ):
+  conn = database.engine.connect()
+  conn.execute("CREATE TABLE Todo(id INTEGER PRIMARY KEY autoincrement, owner INTEGER, todotext TEXT ,done BIT, date TIMESTAMP)")
+  conn.execute("CREATE TABLE Users(id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, password TEXT)")
+  conn.execute('INSERT Into Users VALUES(1,"mohamed", "root")')
+  import time
+  curr_time = time.strftime("%Y/%m/%d %H:%M:%S")
+  conn.execute('INSERT Into Todo VALUES(1, 1, "Hello to mytodo", 0, "%s")' % curr_time)
+  conn.close()
 
 app.run(
   host=app.config.get("HOST"),

@@ -24,9 +24,9 @@ app.config["PORT"] = 5000
 
 # Change this; as suggested in Flask docs you may want
 # to use urandom
-app.secret_key = 'My-really-top-key'
+app.secret_key = 'My-really-top-secret-key'
 
 # Set your database URI
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////home/mohamed/todo.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////home/mohamed/zope.db'
 
 
