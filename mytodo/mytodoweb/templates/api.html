@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hello!</title>
+<link rel="stylesheet" href="https://stackedit.io/res-min/themes/base.css" />
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
+</head>
+<body><div class="container"><h1 id="mytodo-api-docs">Mytodo API doc’s</h1>
+
+<p>For each request you should send the username and the password. <br>
+A json object will be returned you should parse it and extract the needed data.</p>
+
+<pre class="prettyprint"><code class=" hljs json">{
+    "<span class="hljs-attribute">username</span>": <span class="hljs-value">user</span>,
+    "<span class="hljs-attribute">password</span>": <span class="hljs-value">password 
+</span>}</code></pre>
+
+<p><strong>To list all tasks:</strong> <br>
+send a post request to</p>
+
+<blockquote>
+  <p>/api/get/?action=all</p>
+</blockquote>
+
+<p>the post data should contain the username and the password.</p>
+
+<p><strong>To list only uncompleted tasks:</strong> <br>
+send a post request to</p>
+
+<blockquote>
+  <p>/api/get/?action=ls</p>
+</blockquote>
+
+<p>the post data should contain the username and the password.</p>
+
+<p><strong>To add a task:</strong>  <br>
+send a post request to</p>
+
+<blockquote>
+  <p>/api/set/?action=add</p>
+</blockquote>
+
+<p>the post data should contain the username and the password and an object called text which represents the task text.</p>
+
+<p><strong>To done or undone:</strong> <br>
+send a post request to</p>
+
+<blockquote>
+  <p>/api/set/?action=done&amp;index=num</p>
+</blockquote>
+
+<p>the post data should contain the username and the password. <br>
+change num to the task index, to undone just change the action parameter to undone.</p>
+
+<p><strong>To remove a task:</strong> <br>
+the same for done and undone but only with changing the action to remove</p>
+
+<p><strong>To search:</strong> <br>
+send a post request to:</p>
+
+<blockquote>
+  <p>/api/get/?action=search&amp;tag=food</p>
+</blockquote>
+
+<p>and as always the post data contains the username and the password.</p>
+
+<p>A python example using requests</p>
+
+<pre class="prettyprint"><code class=" hljs haskell"><span class="hljs-import"><span class="hljs-keyword">import</span> requests</span>
+<span class="hljs-title">login</span> = {
+    <span class="hljs-string">"username"</span>: <span class="hljs-string">"mohamed"</span>,
+    <span class="hljs-string">"password"</span>: <span class="hljs-string">"root"</span>
+}
+<span class="hljs-title">req</span> = requests.post('http://localhost:<span class="hljs-number">5000</span>/api/set/?action=add', <span class="hljs-typedef"><span class="hljs-keyword">data</span>=login)</span>
+<span class="hljs-title">print</span> req.text</code></pre>
+
+<p>I used <a href="https://stackedit.io/">https://stackedit.io/</a> to convert my markdown into html.</p></div></body>
+</html>

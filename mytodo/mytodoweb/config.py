@@ -17,7 +17,7 @@
 from mytodo.mytodoweb import app
 
 # Disable debug in production
-app.config['DEBUG'] = False
+app.config['DEBUG'] = True
 
 app.config["HOST"] = '0.0.0.0'
 app.config["PORT"] = 5000

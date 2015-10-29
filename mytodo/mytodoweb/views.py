@@ -15,7 +15,12 @@
 #along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 from . import app, database, tools
-from flask import jsonify, request, abort
+from flask import jsonify, request, abort, render_template
+
+@app.route('/api')
+def api():
+  return render_template('api.html')
+
 
 @app.route('/api/get/', methods=['GET', 'POST'])
 def apiget():
@@ -44,7 +49,7 @@ def apiget():
       c[str(i)] = x.__dict__
     return jsonify(c)
   else:
-    return 'Send a post request containing username and password'
+    return render_template('api.html')
 
 @app.route('/api/set/', methods=['GET', 'POST'])
 def  apiset():
@@ -83,5 +88,5 @@ def  apiset():
         s.commit()
     return ''
   else:
-    return 'Send a post request containing username and password'
+    return render_template('api.html')
 

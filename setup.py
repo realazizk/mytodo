@@ -4,7 +4,7 @@ from setuptools import setup
 
 setup(
   name='mytodo',
-  version='0.2.3-patch1',
+  version='0.2.3.1',
   description='The free/libre todo list manager',
   url='https://github.com/mohamed-aziz/mytodo',
   author='Mohamed Aziz Knani',
@@ -21,7 +21,8 @@ setup(
     'mytodo/mytodo_gui'
   ],
   package_data={
-    'mytodo.img' : ['close.png', 'done.png']
+    'mytodo.img' : ['close.png', 'done.png'],
+    'mytodo.mytodoweb' : ['templates/api.html']
   },
 
   install_requires=[
