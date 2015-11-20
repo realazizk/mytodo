@@ -74,6 +74,7 @@ class configMenu(wx.Frame):
     }
 
     tools.saveUserConfig( data )
+    self.onClose(None)
 
   def onClose(self, e):
     self.Hide()
@@ -158,14 +159,14 @@ class mytodoGui(wx.Frame):
 
   def Reload(self, e=1, out=[]):
     self.listctrl.ClearAll()
-    self.listctrl.InsertColumn(0, "Text")
+    self.listctrl.InsertColumn(0, "Todos")
     self.listctrl.InsertColumn(1, "Date")
     if not out:
       out = self.clie.listall()
       if not out:
         wx.MessageBox('Could not connect to mytodo server', 'Error', 
             wx.OK | wx.ICON_ERROR)
-        self.Close()
+        self.Menu.Show()
         return
     self.out = out
     for i, e in enumerate(out):
