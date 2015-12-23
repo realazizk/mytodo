@@ -14,14 +14,15 @@
 #You should have received a copy of the GNU General Public License
 #along with this program.  If not, see <http://www.gnu.org/licenses/>
 
-# When I wrote this code I was learning WXpython so only God and I knows 
+# When I wrote this code I was learning WXpython so only God and I knows
 # what I were doing, now only god knows ...
 
 import time
 import wx
 import mytodo.tools as tools
 import sys
-from datetime import datetime, timedelta
+from datetime import datetime
+import wx.lib.mixins.listctrl as listmix
 
 class configMenu(wx.Frame):
 
@@ -29,7 +30,7 @@ class configMenu(wx.Frame):
     super(configMenu, self).__init__(*args, **kwargs)
     self.data = tools.loadUserConfig()
     self.panel = wx.Panel( self, wx.ID_ANY )
-    
+
     vbox = wx.BoxSizer(wx.VERTICAL)
     hbox1 = wx.BoxSizer(wx.HORIZONTAL)
     hbox2 = wx.BoxSizer(wx.HORIZONTAL)
@@ -43,10 +44,10 @@ class configMenu(wx.Frame):
 
     label3 = wx.StaticText( self.panel, wx.ID_ANY, 'Host' )
     self.input3 = wx.TextCtrl( self.panel, wx.ID_ANY, value=self.data['host'] )
-    
+
     ok = wx.Button(self.panel, wx.ID_ANY, 'Save')
     self.Bind(wx.EVT_BUTTON, self.onAccept, ok)
-    self.Bind(wx.EVT_CLOSE, self.onClose, self) 
+    self.Bind(wx.EVT_CLOSE, self.onClose, self)
 
 
     hbox1.Add( label1, 0, wx.ALL, 5 )
@@ -60,7 +61,7 @@ class configMenu(wx.Frame):
     vbox.Add( hbox1, 0, wx.ALL, 5 )
     vbox.Add( hbox2 , 0, wx.ALL|wx.EXPAND, 5)
     vbox.Add( hbox3 , 0, wx.ALL|wx.EXPAND, 5)
-    vbox.Add( wx.StaticLine(self.panel), 0, wx.ALL|wx.EXPAND, 5 ) 
+    vbox.Add( wx.StaticLine(self.panel), 0, wx.ALL|wx.EXPAND, 5 )
     vbox.Add( ok, 0, wx.ALL|wx.ALIGN_CENTER, 5 )
 
     self.panel.SetSizer(vbox)
@@ -79,6 +80,14 @@ class configMenu(wx.Frame):
   def onClose(self, e):
     self.Hide()
 
+
+class MyListCtrl(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin):
+
+  def __init__(self, *args, **kwargs):
+    wx.ListCtrl.__init__(self, *args, **kwargs)
+    listmix.ListCtrlAutoWidthMixin.__init__(self)
+
+
 class mytodoGui(wx.Frame):
 
   CONNECT_DATA = wx.NewId()
@@ -96,7 +105,12 @@ class mytodoGui(wx.Frame):
     self.clie = tools.Client(a['username'],
                            a['password'])
     #print out
-    self.listctrl = wx.ListCtrl(panel, 2, style=wx.LC_REPORT)
+    self.listctrl = MyListCtrl(panel,
+                               2,
+                               style=wx.LC_REPORT |
+                               wx.BORDER_NONE |
+                               wx.LC_EDIT_LABELS
+                               )
     hbox.Add(self.listctrl, 1, wx.EXPAND | wx.ALL, 20)
     btnPanel = wx.Panel(panel, wx.ID_ANY)
     vbox = wx.BoxSizer(wx.VERTICAL)
@@ -115,7 +129,7 @@ class mytodoGui(wx.Frame):
 
     self.listctrl.SetImageList(self.il, wx.IMAGE_LIST_SMALL)
 
-    connectmenu.Append(self.CONNECT_DATA, 'Connection options', 
+    connectmenu.Append(self.CONNECT_DATA, 'Connection options',
         'Connect to a mytodo server')
 
     menubar.Append(connectmenu, 'Options')
@@ -132,9 +146,10 @@ class mytodoGui(wx.Frame):
     self.Bind(wx.EVT_BUTTON, self.Undone, id=self.UN_DONE)
     self.Bind(wx.EVT_BUTTON, self.Reload, id=self.UPDATE)
     self.Bind(wx.EVT_BUTTON, self.Delete, id=self.DELETE)
-    self.Bind(wx.EVT_TEXT_ENTER, self.onSearch, self.pSearch)
+    # self.Bind(wx.EVT_TEXT_ENTER, self.onSearch, self.pSearch)
+    self.pSearch.Bind(wx.EVT_TEXT, self.onSearch)
     self.Bind(wx.EVT_SEARCHCTRL_CANCEL_BTN, self.onSearchCancel, self.pSearch)
-    
+    self.listctrl.Bind(wx.EVT_RIGHT_DOWN, self.OnRightClick)
 
     vbox.Add((-1, 20))
     vbox.Add(new)
@@ -147,6 +162,27 @@ class mytodoGui(wx.Frame):
     panel.SetSizer(hbox)
     self.Menu = configMenu(self, -1, 'Config Menu')
     self.Reload()
+
+  def OnRightClick(self, e):
+    if not hasattr(self, "PopId1"):
+      self.PopId1 = wx.NewId()
+      self.PopId2 = wx.NewId()
+      self.PopId3 = wx.NewId()
+      self.PopId4 = wx.NewId()
+      self.PopId5 = wx.NewId()
+      self.PopId6 = wx.NewId()
+
+      self.Bind(wx.EVT_MENU, self.Reload, id=self.PopId1)
+      self.Bind(wx.EVT_MENU, self.Add, id=self.PopId2)
+      self.Bind(wx.EVT_MENU, self.Delete, id=self.PopId3)
+
+    menu = wx.Menu()
+
+    menu.Append(self.PopId1, "Reload")
+    menu.Append(self.PopId2, "Add a task")
+    menu.Append(self.PopId3, "Remove")
+    self.PopupMenu(menu)
+    menu.Destroy()
 
   def ConnectMenu(self, e):
     self.Menu.Show()
@@ -164,7 +200,7 @@ class mytodoGui(wx.Frame):
     if not out:
       out = self.clie.listall()
       if not out:
-        wx.MessageBox('Could not connect to mytodo server', 'Error', 
+        wx.MessageBox('Could not connect to mytodo server', 'Error',
             wx.OK | wx.ICON_ERROR)
         self.Menu.Show()
         return
