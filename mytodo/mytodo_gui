@@ -196,6 +196,8 @@ class mytodoGui(wx.Frame):
     menu.Append(self.PopId1, "Reload")
     menu.Append(self.PopId2, "Add a task")
     menu.Append(self.PopId3, "Remove")
+    # show the edit on the popup menu only if one element is
+    # selected
     if self.listctrl.GetSelectedItemCount() == 1:
       menu.Append(self.PopId4, "Edit")
 
@@ -215,6 +217,7 @@ class mytodoGui(wx.Frame):
     self.Reload()
 
   def Reload(self, e=1, out=[]):
+    sel = self.listctrl.GetFocusedItem()
     self.listctrl.ClearAll()
     self.listctrl.InsertColumn(0, "Todos")
     self.listctrl.InsertColumn(1, "Date")
@@ -240,6 +243,11 @@ class mytodoGui(wx.Frame):
 
     for i in range(2):
       self.listctrl.SetColumnWidth(i, wx.LIST_AUTOSIZE)
+
+    try:
+      self.listctrl.Focus(sel[0])
+    except Exception:
+      pass
 
   def Undone(self, e):
     for i in self.getSelected():
