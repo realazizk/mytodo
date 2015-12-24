@@ -156,6 +156,7 @@ class mytodoGui(wx.Frame):
     self.Bind(wx.EVT_SEARCHCTRL_CANCEL_BTN, self.onSearchCancel, self.pSearch)
     self.listctrl.Bind(wx.EVT_RIGHT_DOWN, self.OnRightClick)
     self.listctrl.Bind(wx.EVT_LIST_END_LABEL_EDIT, self.EditLabel)
+    self.listctrl.Bind(wx.EVT_LIST_ITEM_ACTIVATED, self.Undone)
 
     vbox.Add((-1, 20))
     vbox.Add(new)
