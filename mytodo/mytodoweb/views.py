@@ -80,6 +80,14 @@ def  apiset():
           s.delete(a)
           s.commit()
 
+      if request.form.has_key('text'):
+        text = request.form.get('text')
+        if t =="edit":
+          a = s.query(database.Todo).filter(database.Todo.owner == tools.getOwnerbyUsername(username),
+                                          database.Todo.id  == index).first()
+          a.todotext = text
+          s.commit()
+
     if request.form.has_key('text'):
       text = request.form.get('text')
       if t == 'add':

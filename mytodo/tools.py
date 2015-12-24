@@ -102,6 +102,10 @@ class Client(object):
     c = self.req(urljoin(a['host'], '/api/get/?action=search&tag=%s' % tag), data=self.cord).text
     return dictToList(c)
 
+  def edit(self, num, todotext):
+    self.cord['text'] = todotext
+    self.req(urljoin(a['host'], '/api/set/?action=edit&index=%s' % str(num)), data=self.cord)
+
 def dy (date) :
   parsed = time.strptime(date, "%Y/%m/%d %H:%M:%S")
   d = (datetime.today() - datetime(parsed.tm_year, parsed.tm_mon, parsed.tm_mday)).days

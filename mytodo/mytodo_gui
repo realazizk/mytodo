@@ -96,6 +96,8 @@ class mytodoGui(wx.Frame):
   UPDATE       = wx.NewId()
   DELETE       = wx.NewId()
   SEARCH       = wx.NewId()
+  EDIT         = wx.NewId()
+
   def __init__(self, *args, **kwargs):
     super(mytodoGui, self).__init__(*args, **kwargs)
     panel = wx.Panel(self)
@@ -118,7 +120,9 @@ class mytodoGui(wx.Frame):
     ren = wx.Button(btnPanel, self.UN_DONE, '(Un)Done', size=(90, 30))
     dlt = wx.Button(btnPanel, self.DELETE, 'Delete', size=(90, 30))
     clr = wx.Button(btnPanel, self.UPDATE, 'Update', size=(90, 30))
-    status = self.CreateStatusBar()
+    edt = wx.Button(btnPanel, self.EDIT, 'Edit', size=(90, 30))
+
+    # status = self.CreateStatusBar()
     menubar = wx.MenuBar()
     connectmenu = wx.Menu()
 
@@ -146,22 +150,31 @@ class mytodoGui(wx.Frame):
     self.Bind(wx.EVT_BUTTON, self.Undone, id=self.UN_DONE)
     self.Bind(wx.EVT_BUTTON, self.Reload, id=self.UPDATE)
     self.Bind(wx.EVT_BUTTON, self.Delete, id=self.DELETE)
+    self.Bind(wx.EVT_BUTTON, self.Edit, id=self.EDIT)
     # self.Bind(wx.EVT_TEXT_ENTER, self.onSearch, self.pSearch)
     self.pSearch.Bind(wx.EVT_TEXT, self.onSearch)
     self.Bind(wx.EVT_SEARCHCTRL_CANCEL_BTN, self.onSearchCancel, self.pSearch)
     self.listctrl.Bind(wx.EVT_RIGHT_DOWN, self.OnRightClick)
+    self.listctrl.Bind(wx.EVT_LIST_END_LABEL_EDIT, self.EditLabel)
 
     vbox.Add((-1, 20))
     vbox.Add(new)
     vbox.Add(ren, 0, wx.TOP, 5)
     vbox.Add(dlt, 0, wx.TOP, 5)
     vbox.Add(clr, 0, wx.TOP, 5)
+    vbox.Add(edt, 0, wx.TOP, 5)
     vbox.Add(self.pSearch, 0, wx.ALL, 5)
     btnPanel.SetSizer(vbox)
     hbox.Add(btnPanel, 0.6, wx.EXPAND | wx.RIGHT, 20)
     panel.SetSizer(hbox)
     self.Menu = configMenu(self, -1, 'Config Menu')
     self.Reload()
+
+  def EditLabel(self, e):
+    if self.onExclamation("Edit"):
+      self.clie.edit(self.out[self.getSelected()[0]][3],
+                     self.listctrl.GetEditControl().GetLineText(0)
+                     )
 
   def OnRightClick(self, e):
     if not hasattr(self, "PopId1"):
@@ -175,14 +188,21 @@ class mytodoGui(wx.Frame):
       self.Bind(wx.EVT_MENU, self.Reload, id=self.PopId1)
       self.Bind(wx.EVT_MENU, self.Add, id=self.PopId2)
       self.Bind(wx.EVT_MENU, self.Delete, id=self.PopId3)
+      self.Bind(wx.EVT_MENU, self.Edit, id=self.PopId4)
 
     menu = wx.Menu()
 
     menu.Append(self.PopId1, "Reload")
     menu.Append(self.PopId2, "Add a task")
     menu.Append(self.PopId3, "Remove")
+    if self.listctrl.GetSelectedItemCount() == 1:
+      menu.Append(self.PopId4, "Edit")
+
     self.PopupMenu(menu)
     menu.Destroy()
+
+  def Edit(self, e):
+    self.listctrl.EditLabel(self.getSelected()[0])
 
   def ConnectMenu(self, e):
     self.Menu.Show()
@@ -229,12 +249,15 @@ class mytodoGui(wx.Frame):
     self.Reload()
 
   def Delete(self, e):
-    if self.onExclamation(1):
+    if self.onExclamation("Delete"):
       map(lambda rx : self.clie.remove(self.out[rx][3]), self.getSelected())
       self.Reload()
 
   def onExclamation(self, event):
-      msg = "Are you sure you want to delete the todo ?"
+
+      msg = "Are you sure you want to perform this action ?"
+      if isinstance(event, str):
+        msg = "Are you sure you want to %s this todo ?" % event
       return self.showMessageDlg(msg, "Question",
                           wx.YES_NO|wx.YES_DEFAULT|wx.ICON_QUESTION)
 
