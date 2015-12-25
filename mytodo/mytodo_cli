@@ -19,7 +19,7 @@ from sys import argv
 from mytodo.tools import *
 
 try:
-  from colorama import init, Fore
+  from colorama import init, Fore, Back
 except ImportError:
   # Well that's my ugly hack
   class Fore:
@@ -27,6 +27,11 @@ except ImportError:
     RESET  = ''
     GREEN  = ''
     RED    = ''
+    MAGENTA = ''
+  # Litteraly the same colors
+  class Back(Fore):
+    pass
+
 else : init()
 
 a =  loadUserConfig()
@@ -52,9 +57,23 @@ def display(out):
   except UnicodeEncodeError :
     ERROR = 'Not Yet'
     TICK = 'Done'
+
+  def Highlight(s):
+    c = list()
+    for r in s.split():
+      if (len(r)>1):
+        if r[0]=='#':
+          r = Back.MAGENTA+r+Back.RESET
+        elif r[0] == '@':
+          r = Back.RED+r+Back.RESET
+      c.append(r)
+
+    return ' '.join(c)
+
   for row in out:
     dayz = dy(row[0])
-    print u'%i) %s, %s %s' % (row[3], row[4].encode('utf-8'), Fore.YELLOW+dayz+Fore.RESET,
+    print u'%i) %s, %s %s' % (row[3],Highlight(row[4]).encode('UTF-8'),
+                              Fore.YELLOW+dayz+Fore.RESET,
                             Fore.GREEN+TICK+Fore.RESET \
                           if row[2] else Fore.RED+ERROR+Fore.RESET)
 
