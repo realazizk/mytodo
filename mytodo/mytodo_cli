@@ -52,8 +52,8 @@ def argument_parser():
 
 def display(out):
   try:
-    TICK = u'\u2713'.encode(sys.stdout.encoding, errors='strict')
-    ERROR = Fore.RED+u'\u2718'.encode(sys.stdout.encoding, errors='strict')
+    TICK = u'\u2713'.encode(sys.stdout.encoding or 'ASCII', errors='strict')
+    ERROR = Fore.RED+u'\u2718'.encode(sys.stdout.encoding or 'ASCII', errors='strict')
   except UnicodeEncodeError :
     ERROR = 'Not Yet'
     TICK = 'Done'
@@ -65,7 +65,7 @@ def display(out):
         if r[0]=='#':
           r = Back.MAGENTA+r+Back.RESET
         elif r[0] == '@':
-          r = Back.RED+r+Back.RESET
+          r = Back.BLUE+r+Back.RESET
       c.append(r)
 
     return ' '.join(c)
