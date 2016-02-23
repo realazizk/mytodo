@@ -13,7 +13,7 @@
 
 #You should have received a copy of the GNU General Public License
 #along with this program.  If not, see <http://www.gnu.org/licenses/>
-
+#TODO Make the code compatible with PEP8
 import time
 import wx
 import mytodo.tools as tools
@@ -170,7 +170,11 @@ class mytodoGui(wx.Frame):
     self.Reload()
 
   def EditLabel(self, e):
+    # If the todo is not changed don't popup the exclamation window
+    if self.out[self.num][4]==self.listctrl.GetEditControl().GetLineText(0):
+      return
     if self.onExclamation("Edit"):
+      print self.listctrl.GetEditControl().GetLineText(0)
       self.clie.edit(self.out[self.getSelected()[0]][3],
                      self.listctrl.GetEditControl().GetLineText(0)
                      )
@@ -203,6 +207,7 @@ class mytodoGui(wx.Frame):
     menu.Destroy()
 
   def Edit(self, e):
+    self.num = self.getSelected()[0]
     self.listctrl.EditLabel(self.getSelected()[0])
 
   def ConnectMenu(self, e):
@@ -288,6 +293,7 @@ class mytodoGui(wx.Frame):
       # if self.listctrl.IsSelected(i):
         # c.append(i)
     # return c
+    # TODO: Simplify the code
     return map(lambda x: x[0], filter(lambda x: x[1], enumerate(map(self.listctrl.IsSelected,
               range(self.listctrl.GetItemCount())))))
 
