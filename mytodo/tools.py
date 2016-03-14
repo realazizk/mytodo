@@ -64,7 +64,9 @@ def dictToList(sic):
     return False
   else:
     for i in range(len(sic)):
-      a.append( sic[str(i)].values() )
+      r = sic[str(i)].values()
+      c = (r[0], r[1], r[2], r[4], r[3])
+      a.append( c )
     return a
 
 class Client(object):
