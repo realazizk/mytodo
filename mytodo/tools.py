@@ -64,8 +64,8 @@ def dictToList(sic):
     return False
   else:
     for i in range(len(sic)):
-      r = sic[str(i)].values()
-      c = (r[0], r[1], r[2], r[4], r[3])
+      r = sic[str(i)]
+      c = (r['date'], r['owner'], r['done'], r['id'], r['todotext'])
       a.append( c )
     return a
 
