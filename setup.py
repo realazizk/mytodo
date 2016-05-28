@@ -28,6 +28,7 @@ setup(
   install_requires=[
     'requests',
     'flask',
-    'sqlalchemy'
+    'sqlalchemy',
+    'colorama'
   ]
 )
