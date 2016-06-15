@@ -118,3 +118,7 @@ or write docs or wiki, contact me at  medazizknani[at]gmail.com
 Or you can even help with spreading mytodo on the World Wide Web.
 
 
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/mohamed-aziz/mytodo/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
