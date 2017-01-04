@@ -1,3 +1,7 @@
+# Project no longer maintained
+
+I will no longer maintain this project, I just lost passion for it so I'm looking for a new maintaine.
+*Warning*: When I started writing this project I didn't know much what I'm doing so the code is a real mess and there even no tests.
 
 # Mytodo
 
